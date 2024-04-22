@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libminiraft.a CMakeFiles/miniraft.dir/src/messages.cpp.o CMakeFiles/miniraft.dir/src/raft.cpp.o CMakeFiles/miniraft.dir/src/server.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libminiraft.a

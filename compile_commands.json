@@ -1,0 +1,158 @@
+[
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/miniraft.dir/src/messages.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/messages.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/messages.cpp",
+  "output": "CMakeFiles/miniraft.dir/src/messages.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/miniraft.dir/src/raft.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/raft.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/raft.cpp",
+  "output": "CMakeFiles/miniraft.dir/src/raft.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/miniraft.dir/src/server.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/server.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src/server.cpp",
+  "output": "CMakeFiles/miniraft.dir/src/server.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/cmocka/1.1.7/include -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/test_raft.dir/test/test_raft.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/test/test_raft.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/test/test_raft.cpp",
+  "output": "CMakeFiles/test_raft.dir/test/test_raft.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/cmocka/1.1.7/include -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/test_read_write.dir/test/test_read_write.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/test/test_read_write.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/test/test_read_write.cpp",
+  "output": "CMakeFiles/test_read_write.dir/test/test_read_write.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/server.dir/server/server.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/server/server.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/server/server.cpp",
+  "output": "CMakeFiles/server.dir/server/server.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/client.dir/client/client.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/client/client.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/client/client.cpp",
+  "output": "CMakeFiles/client.dir/client/client.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/src -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/kv.dir/examples/kv.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/examples/kv.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/examples/kv.cpp",
+  "output": "CMakeFiles/kv.dir/examples/kv.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/socket.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/socket.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/socket.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/socket.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/sockutils.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/sockutils.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/sockutils.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/sockutils.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/poll.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/poll.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/poll.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/poll.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/select.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/select.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/select.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/select.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/epoll.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/epoll.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/epoll.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/epoll.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/uring.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/uring.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/uring.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/uring.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/kqueue.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/kqueue.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/kqueue.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/kqueue.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/resolver.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/resolver.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/resolver.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/resolver.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/coroio.dir/coroio/ssl.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/ssl.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/coroio/ssl.cpp",
+  "output": "coroio/CMakeFiles/coroio.dir/coroio/ssl.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/timers.dir/examples/timers.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/timers.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/timers.cpp",
+  "output": "coroio/CMakeFiles/timers.dir/examples/timers.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/echotest.dir/examples/echotest.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echotest.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echotest.cpp",
+  "output": "coroio/CMakeFiles/echotest.dir/examples/echotest.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/echoserver.dir/examples/echoserver.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echoserver.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echoserver.cpp",
+  "output": "coroio/CMakeFiles/echoserver.dir/examples/echoserver.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/echoclient.dir/examples/echoclient.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echoclient.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/echoclient.cpp",
+  "output": "coroio/CMakeFiles/echoclient.dir/examples/echoclient.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/sslechoclient.dir/examples/sslechoclient.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/sslechoclient.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/sslechoclient.cpp",
+  "output": "coroio/CMakeFiles/sslechoclient.dir/examples/sslechoclient.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/sslechoserver.dir/examples/sslechoserver.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/sslechoserver.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/sslechoserver.cpp",
+  "output": "coroio/CMakeFiles/sslechoserver.dir/examples/sslechoserver.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/resolver.dir/examples/resolver.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/resolver.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/resolver.cpp",
+  "output": "coroio/CMakeFiles/resolver.dir/examples/resolver.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/bench.dir/examples/bench.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/bench.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/examples/bench.cpp",
+  "output": "coroio/CMakeFiles/bench.dir/examples/bench.cpp.o"
+},
+{
+  "directory": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio -I/opt/homebrew/Cellar/cmocka/1.1.7/include -I/opt/homebrew/Cellar/openssl@3/3.2.1/include -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/ut_tests.dir/tests/tests.cpp.o -c /Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/tests/tests.cpp",
+  "file": "/Users/jingxi_yu/Downloads/distributed/miniraft-cpp/coroio/tests/tests.cpp",
+  "output": "coroio/CMakeFiles/ut_tests.dir/tests/tests.cpp.o"
+}
+]

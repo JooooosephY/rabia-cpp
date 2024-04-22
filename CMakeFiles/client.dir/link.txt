@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/client.dir/client/client.cpp.o -o client   -L/opt/homebrew/Cellar/openssl@3/3.2.1/lib  -Wl,-rpath,/opt/homebrew/Cellar/openssl@3/3.2.1/lib libminiraft.a coroio/libcoroio.a -lssl -lcrypto 
