@@ -68,7 +68,7 @@ TMessageHolder<TLogEntry> TKv::Prepare(TMessageHolder<TCommandRequest> command, 
     auto dataSize = command->Len - sizeof(TCommandRequest);
     auto entry = NewHoldedMessage<TLogEntry>(sizeof(TLogEntry)+dataSize);
     memcpy(entry->Data, command->Data, dataSize);
-    entry->Term = term;
+    //entry->Term = term;
     return entry;
 }
 

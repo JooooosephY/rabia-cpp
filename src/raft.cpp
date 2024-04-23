@@ -147,7 +147,7 @@ TRaft::TRaft(std::shared_ptr<IRsm> rsm, int node, const TNodeDict& nodes)
 void TRaft::OnRequestVote(ITimeSource::Time now, TMessageHolder<TRequestVoteRequest> message) {
     if (message->Term < State->CurrentTerm) {
         auto reply = NewHoldedMessage(
-            TMessageEx {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
+            TMessage {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
             TRequestVoteResponse {.VoteGranted = false});
         Nodes[reply->Dst]->Send(std::move(reply));
     } else if (message->Term == State->CurrentTerm) {
@@ -161,7 +161,7 @@ void TRaft::OnRequestVote(ITimeSource::Time now, TMessageHolder<TRequestVoteRequ
         }
 
         auto reply = NewHoldedMessage(
-            TMessageEx {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
+            TMessage {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
             TRequestVoteResponse {.VoteGranted = accept});
 
         if (accept) {
@@ -186,7 +186,7 @@ void TRaft::OnAppendEntries(ITimeSource::Time now, TMessageHolder<TAppendEntries
         VolatileState->ElectionDue = MakeElection(now);
 
         auto reply = NewHoldedMessage(
-            TMessageEx {
+            TMessage {
                 .Src = Id,
                 .Dst = message->Src,
                 .Term = State->CurrentTerm,
@@ -229,7 +229,7 @@ void TRaft::OnAppendEntries(ITimeSource::Time now, TMessageHolder<TAppendEntries
     }
 
     auto reply = NewHoldedMessage(
-        TMessageEx {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
+        TMessage {.Src = Id, .Dst = message->Src, .Term = State->CurrentTerm},
         TAppendEntriesResponse {.MatchIndex = matchIndex, .Success = success});
 
     (*VolatileState)
@@ -281,7 +281,7 @@ void TRaft::OnCommandRequest(TMessageHolder<TCommandRequest> command, const std:
 
 TMessageHolder<TRequestVoteRequest> TRaft::CreateVote(uint32_t nodeId) {
     auto mes = NewHoldedMessage(
-        TMessageEx {.Src = Id, .Dst = nodeId, .Term = State->CurrentTerm},
+        TMessage {.Src = Id, .Dst = nodeId, .Term = State->CurrentTerm},
         TRequestVoteRequest {
             .LastLogIndex = State->Log.size(),
             .LastLogTerm = State->Log.empty() ? 0 : State->Log.back()->Term,
@@ -299,7 +299,7 @@ TMessageHolder<TAppendEntriesRequest> TRaft::CreateAppendEntries(uint32_t nodeId
     }
 
     auto mes = NewHoldedMessage(
-        TMessageEx {.Src = Id, .Dst = nodeId, .Term = State->CurrentTerm},
+        TMessage {.Src = Id, .Dst = nodeId, .Term = State->CurrentTerm},
         TAppendEntriesRequest {
             .PrevLogIndex = prevIndex,
             .PrevLogTerm = State->LogTerm(prevIndex),
@@ -356,7 +356,7 @@ void TRaft::Become(EState newStateName) {
 
 void TRaft::Process(ITimeSource::Time now, TMessageHolder<TMessage> message, const std::shared_ptr<INode>& replyTo) {
     if (message.IsEx()) {
-        auto messageEx = message.Cast<TMessageEx>();
+        auto messageEx = message.Cast<TMessage>();
         if (messageEx->Term > State->CurrentTerm) {
             State->CurrentTerm = messageEx->Term;
             State->VotedFor = 0;

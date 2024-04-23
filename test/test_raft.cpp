@@ -249,7 +249,7 @@ void test_follower_append_entries_small_term(void**) {
     };
     auto ts = std::make_shared<TFakeTimeSource>();
     auto raft = MakeRaft(onSend, 3);
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 0,
@@ -283,7 +283,7 @@ void test_follower_append_entries_7a(void**) {
         .VotedFor = 2,
         .Log = MakeLog<TLogEntry>({1,1,1,4,4,5,5,6,6})
     });
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 1,
@@ -317,7 +317,7 @@ void test_follower_append_entries_7b(void**) {
         .VotedFor = 2,
         .Log = MakeLog<TLogEntry>({1,1,1,4})
     });
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 1,
@@ -351,7 +351,7 @@ void test_follower_append_entries_7c(void**) {
         .VotedFor = 2,
         .Log = MakeLog<TLogEntry>({1,1,1,4,4,5,5,6,6,6,6})
     });
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 1,
@@ -385,7 +385,7 @@ void test_follower_append_entries_7f(void**) {
         .VotedFor = 2,
         .Log = MakeLog<TLogEntry>({1,1,1,2,2,2,3,3,3,3,3})
     });
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 8,
@@ -414,7 +414,7 @@ void test_follower_append_entries_empty_to_empty_log(void**) {
     };
     auto ts = std::make_shared<TFakeTimeSource>();
     auto raft = MakeRaft(onSend, 3);
-    auto mes = NewHoldedMessage(TMessageEx {
+    auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 1,
@@ -447,7 +447,7 @@ void test_candidate_initiate_election(void**) {
     raft->ProcessTimeout(ts->Now());
     assert_int_equal(raft->GetState()->CurrentTerm, term+1);
     assert_int_equal(messages.size(), 2);
-    auto r = NewHoldedMessage(TMessageEx {
+    auto r = NewHoldedMessage(TMessage {
         .Src = 1,
         .Dst = 0,
         .Term = term+1,
@@ -470,7 +470,7 @@ void test_candidate_vote_request_small_term(void**) {
 
     auto ts = std::make_shared<TFakeTimeSource>();
     auto raft = MakeRaft(onSend, 3);
-    auto req = NewHoldedMessage(TMessageEx {
+    auto req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 0,
@@ -480,7 +480,7 @@ void test_candidate_vote_request_small_term(void**) {
         .CandidateId = 2,
     });
     raft->Process(ts->Now(), std::move(req));
-    auto res = NewHoldedMessage(TMessageEx {
+    auto res = NewHoldedMessage(TMessage {
         .Src = 1,
         .Dst = 2,
         .Term = raft->GetState()->CurrentTerm,
@@ -500,7 +500,7 @@ void test_candidate_vote_request_ok_term(void**) {
 
     auto ts = std::make_shared<TFakeTimeSource>();
     auto raft = MakeRaft(onSend, 3);
-    auto req = NewHoldedMessage(TMessageEx {
+    auto req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 1,
@@ -510,7 +510,7 @@ void test_candidate_vote_request_ok_term(void**) {
         .CandidateId = 2,
     });
     raft->Process(ts->Now(), std::move(req));
-    auto res = NewHoldedMessage(TMessageEx {
+    auto res = NewHoldedMessage(TMessage {
         .Src = 1,
         .Dst = 2,
         .Term = raft->GetState()->CurrentTerm,
@@ -526,7 +526,7 @@ void test_candidate_vote_request_big(void**) {
     auto raft = MakeRaft();
     auto ts = std::make_shared<TFakeTimeSource>();
     raft->Become(EState::CANDIDATE);
-    auto req = NewHoldedMessage(TMessageEx {
+    auto req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 3,
@@ -552,7 +552,7 @@ void test_candidate_vote_after_start(void**) {
     raft->ProcessTimeout(ts->Now());
     assert_int_equal(raft->GetState()->VotedFor, 1);
     assert_int_equal(raft->GetState()->CurrentTerm, 2);
-    auto req = NewHoldedMessage(TMessageEx {
+    auto req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 2,
@@ -566,7 +566,7 @@ void test_candidate_vote_after_start(void**) {
     assert_int_equal(last->VoteGranted, false);
 
     // request with higher term => follower
-    req = NewHoldedMessage(TMessageEx {
+    req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 3,
@@ -586,7 +586,7 @@ void test_election_5_nodes(void**) {
     auto raft = MakeRaft({}, 5);
     ts->Advance(std::chrono::milliseconds(10000));
     raft->Become(EState::CANDIDATE);
-    auto req = NewHoldedMessage(TMessageEx {
+    auto req = NewHoldedMessage(TMessage {
         .Src = 2,
         .Dst = 1,
         .Term = 2,

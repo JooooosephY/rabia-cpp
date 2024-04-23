@@ -8,231 +8,163 @@
 #include <string.h>
 #include <typeinfo>
 
-enum class EMessageType : uint32_t {
-    NONE = 0,
-    LOG_ENTRY = 1,
-    REQUEST_VOTE_REQUEST = 2,
-    REQUEST_VOTE_RESPONSE = 3,
-    APPEND_ENTRIES_REQUEST = 4,
-    APPEND_ENTRIES_RESPONSE = 5,
-    COMMAND_REQUEST = 6,
-    COMMAND_RESPONSE = 7,
+enum class Operation : uint32_t {
+    SET = 0,
+    GET = 1,
+    DEL = 2
+    //LIST = 3
 };
+
+enum class EMessageType : uint32_t {
+    PROTOCAL = 0,
+    LOG_ENTRY = 1,
+    REPLICATE = 2,
+    PROPOSAL = 3,
+    STATE = 4,
+    VOTE = 5,
+    DECIDED = 6,
+    RESPONSE = 7
+};  // equiv to _valid_types in lab4, #1 is from client
+
+// used in state messages
+enum class EStateType : uint16_t {
+    CMD = 0,
+    BOT = 1
+};
+
+// used in vote messages
+enum class EVoteType : uint16_t {
+    CMD_VOTE = 0,
+    QMARK_VOTE = 1
+};
+
+
+struct Command {
+    uint64_t client_seq;
+    Operation operation;
+    uint64_t key;
+    uint64_t value;
+};
+
+struct SetCommand : public Command{
+    static const Operation operation = Operation::SET;
+};
+
+struct GetCommand : public Command {
+    static const Operation operation = Operation::GET;
+    static const uint64_t value = 0;
+};
+
+struct DelCommand : public Command {
+    static const Operation operation = Operation::DEL;
+    static const uint64_t value = 0;
+};
+
+// struct ListCommand : public Command {
+//     static const Operation operation = Operation::LIST;
+//     static const uint64_t key = 0;
+//     static const uint64_t value = 0;
+// };
+
+static_assert(sizeof(DelCommand) == 32);
+
+struct RSCommand {
+    uint16_t round;
+    EStateType state;
+    Command command;
+};  // name stands for: round state command
+
+struct RVCommand {
+    uint16_t round;
+    EVoteType vote;
+    Command command;
+};  // name stands for: round vote command
+
+
+static_assert(sizeof(RSCommand) == 40);
 
 struct TMessage {
-    static constexpr EMessageType MessageType = EMessageType::NONE;
+    static constexpr EMessageType MessageType = EMessageType::PROTOCAL;
     uint32_t Type;
     uint32_t Len;
-    char Value[0];
+    uint32_t Src = 0;   // equiv to "node" in lab4
+    uint32_t Dst = 0;
 };
 
-static_assert(sizeof(TMessage) == 8);
+static_assert(sizeof(TMessage) == 16);
 
 struct TLogEntry: public TMessage {
     static constexpr EMessageType MessageType = EMessageType::LOG_ENTRY;
-    uint64_t Term = 1;
-    char Data[0];
+    Command command;
 };
 
-struct TMessageEx: public TMessage {
-    uint32_t Src = 0;
-    uint32_t Dst = 0;
-    uint64_t Term = 0;
+
+struct Timestamp {
+    uint32_t idx;
+    uint32_t node_id;
 };
 
-static_assert(sizeof(TMessageEx) == sizeof(TMessage)+16);
-
-struct TRequestVoteRequest: public TMessageEx {
-    static constexpr EMessageType MessageType = EMessageType::REQUEST_VOTE_REQUEST;
-    uint64_t LastLogIndex;
-    uint64_t LastLogTerm;
-    uint32_t CandidateId;
-    uint32_t Padding = 0;
-};
-
-static_assert(sizeof(TRequestVoteRequest) == sizeof(TMessageEx)+24);
-
-struct TRequestVoteResponse: public TMessageEx {
-    static constexpr EMessageType MessageType = EMessageType::REQUEST_VOTE_RESPONSE;
-    uint32_t VoteGranted;
-    uint32_t Padding = 0;
-};
-
-static_assert(sizeof(TRequestVoteResponse) == sizeof(TMessageEx)+8);
-
-struct TAppendEntriesRequest: public TMessageEx {
-    static constexpr EMessageType MessageType = EMessageType::APPEND_ENTRIES_REQUEST;
-    uint64_t PrevLogIndex = 0;
-    uint64_t PrevLogTerm = 0;
-    uint64_t LeaderCommit = 0;
-    uint32_t LeaderId = 0;
-    uint32_t Nentries = 0;
-};
-
-static_assert(sizeof(TAppendEntriesRequest) == sizeof(TMessageEx) + 32);
-
-struct TAppendEntriesResponse: public TMessageEx {
-    static constexpr EMessageType MessageType = EMessageType::APPEND_ENTRIES_RESPONSE;
-    uint64_t MatchIndex;
-    uint32_t Success;
-    uint32_t Padding = 0;
-};
-
-static_assert(sizeof(TAppendEntriesResponse) == sizeof(TMessageEx) + 16);
-
-struct TCommandRequest: public TMessage {
-    static constexpr EMessageType MessageType = EMessageType::COMMAND_REQUEST;
-    enum EFlags {
-        ENone = 0,
-        EWrite = 1,
-    };
-    uint32_t Flags = ENone;
-    char Data[0];
-};
-
-static_assert(sizeof(TCommandRequest) == sizeof(TMessage) + 4);
-
-struct TCommandResponse: public TMessage {
-    static constexpr EMessageType MessageType = EMessageType::COMMAND_RESPONSE;
-    uint64_t Index;
-    char Data[0];
-};
-
-static_assert(sizeof(TCommandResponse) == sizeof(TMessage) + 8);
-
-struct TTimeout {
-    static constexpr std::chrono::milliseconds Election = std::chrono::milliseconds(5000);
-    static constexpr std::chrono::milliseconds Heartbeat = std::chrono::milliseconds(1000);
-    static constexpr std::chrono::milliseconds Rpc = std::chrono::milliseconds(10000);
-};
-
-template<typename T>
-requires std::derived_from<T, TMessage>
-struct TMessageHolder {
-    T* Mes;
-    std::shared_ptr<char[]> RawData;
-
-    uint32_t PayloadSize;
-    std::shared_ptr<TMessageHolder<TMessage>[]> Payload;
-
-    TMessageHolder()
-        : Mes(nullptr)
-    { }
-
-    template<typename U>
-    requires std::derived_from<U, T>
-    TMessageHolder(U* u,
-        const std::shared_ptr<char[]>& rawData,
-        uint32_t payloadSize = 0,
-        const std::shared_ptr<TMessageHolder<TMessage>[]>& payload = {})
-        : Mes(u)
-        , RawData(rawData)
-        , PayloadSize(payloadSize)
-        , Payload(payload)
-    { }
-
-    template<typename U>
-    requires std::derived_from<U, T>
-    TMessageHolder(const TMessageHolder<U>& other)
-        : Mes(other.Mes)
-        , RawData(other.RawData)
-        , PayloadSize(other.PayloadSize)
-        , Payload(other.Payload)
-    { }
-
-    void InitPayload(uint32_t size) {
-        PayloadSize = size;
-        Payload = std::shared_ptr<TMessageHolder<TMessage>[]>(new TMessageHolder<TMessage>[size]);
+struct TReplicate : public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::REPLICATE;
+    Timestamp msg_id;
+    bool operator< (TReplicate &other)
+    {
+        return msg_id.idx > other.msg_id.idx || 
+            (msg_id.idx == other.msg_id.idx && msg_id.node_id > other.msg_id.node_id);
     }
+};
 
-    T* operator->() {
-        return Mes;
-    }
+struct TProposal : public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::PROPOSAL;
+    Timestamp msg_id;
+    uint64_t log_idx;
+    Command command;
+};
+static_assert(sizeof(TProposal) == sizeof(TMessage) + 48);
 
-    const T* operator->() const {
-        return Mes;
-    }
+struct TStateMsg : public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::STATE;
+    uint64_t log_idx;
+    RSCommand rsComand;
 
-    operator bool() const {
-        return !!Mes;
-    }
-
-    bool IsEx() const {
-        return (2 <= Mes->Type && Mes->Type <= 5);
-    }
-
-    template<typename U>
-    requires std::derived_from<U, T>
-    TMessageHolder<U> Cast() {
-        return TMessageHolder<U>(static_cast<U*>(Mes), RawData, PayloadSize, Payload);
-    }
-
-    template<typename U>
-    requires std::derived_from<U, T>
-    auto Maybe() {
-        struct Maybe {
-            TMessageHolder<TMessage> Mes;
-
-            operator bool() const {
-                return Mes;
-            }
-
-            TMessageHolder<U> Cast() {
-                if (*this) {
-                    return Mes.Cast<U>();
-                }
-                throw std::bad_cast();
-            }
+    TStateMsg(uint64_t seq, uint16_t r, EStateType est, Command c)
+    {
+        RSCommand rsc{
+            .round = r,
+            .state = est,
+            .command = c
         };
-
-        return Mes->Type == static_cast<uint32_t>(U::MessageType)
-            ? Maybe { *this }
-            : Maybe { };
-    }
+        log_idx = seq;
+        rsComand = rsc;
+    };
 };
 
-template<typename T>
-requires std::derived_from<T, TMessage>
-T* NewMessage(uint32_t type, uint32_t len) {
-    assert(len >= sizeof(TMessage));
-    char* data = new char[len];
-    T* mes =  new (data) T;
-    mes->Type = type;
-    mes->Len = len;
-    return mes;
-}
+struct TVote : public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::VOTE;
+    uint64_t log_idx;
+    RVCommand rvCommand;
 
-template<typename T>
-requires std::derived_from<T, TMessage>
-TMessageHolder<T> NewHoldedMessage(uint32_t type, uint32_t len)
-{
-    T* mes = NewMessage<T>(type, len);
-    return TMessageHolder<T>(mes, std::shared_ptr<char[]>(reinterpret_cast<char*>(mes)));
-}
+    TVote(uint64_t seq, uint16_t r, EVoteType evt, Command c)
+    {
+        RVCommand rvc {
+            .round = r,
+            .vote = evt,
+            .command = c
+        };
+        log_idx = seq;
+        rvCommand = rvc;
+    }
 
-template<typename T>
-TMessageHolder<T> NewHoldedMessage() {
-    return NewHoldedMessage<T>(static_cast<uint32_t>(T::MessageType), sizeof(T));
-}
+};
 
-template<typename T>
-TMessageHolder<T> NewHoldedMessage(uint32_t size) {
-    assert(size >= sizeof(T));
-    return NewHoldedMessage<T>(static_cast<uint32_t>(T::MessageType), size);
-}
+struct TDecided : public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::DECIDED;
+    uint64_t log_idx;
+    Command command;
+};
 
-template<typename T>
-TMessageHolder<T> NewHoldedMessage(T t) {
-    auto m = NewHoldedMessage<T>();
-    memcpy((char*)m.Mes + sizeof(TMessage), (char*)&t + sizeof(TMessage), sizeof(T) - sizeof(TMessage));
-    return m;
-}
-
-template<typename T>
-requires std::derived_from<T, TMessageEx>
-TMessageHolder<T> NewHoldedMessage(TMessageEx h, T t) {
-    auto m = NewHoldedMessage<T>();
-    memcpy((char*)m.Mes + sizeof(TMessage), (char*)&h + sizeof(TMessage), sizeof(h) - sizeof(TMessage));
-    memcpy((char*)m.Mes + sizeof(TMessageEx), (char*)&t + sizeof(TMessageEx), sizeof(T) - sizeof(TMessageEx));
-    return m;
-}
+struct TResponse : public TMessage{
+    static constexpr EMessageType MessageType = EMessageType::RESPONSE;
+    uint64_t client_seq;
+    uint64_t value;
+};
