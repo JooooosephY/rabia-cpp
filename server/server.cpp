@@ -78,11 +78,11 @@ int main(int argc, char** argv) {
     socket.Listen();
     if (ssl) {
         auto sslSocket = NNet::TSslSocket(std::move(socket), *serverContext.get());
-        TRaftServer server(loop.Poller(), std::move(sslSocket), raft, nodes, timeSource);
+        TRabiaServer server(loop.Poller(), std::move(sslSocket), raft, nodes, timeSource);
         server.Serve();
         loop.Loop();
     } else {
-        TRaftServer server(loop.Poller(), std::move(socket), raft, nodes, timeSource);
+        TRabiaServer server(loop.Poller(), std::move(socket), raft, nodes, timeSource);
         server.Serve();
         loop.Loop();
     }

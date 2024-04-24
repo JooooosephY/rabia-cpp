@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
         TPoller::TSocket socket(NNet::TAddress{myHost.Address, myHost.Port}, loop.Poller());
         socket.Bind();
         socket.Listen();
-        TRaftServer server(loop.Poller(), std::move(socket), raft, nodes, timeSource);
+        TRabiaServer server(loop.Poller(), std::move(socket), raft, nodes, timeSource);
         server.Serve();
         loop.Loop();
     } else {
