@@ -85,35 +85,62 @@ struct DelCommand : public Command {
 
 static_assert(sizeof(GetCommand) == 32);
 
-struct RSCommand {
-    uint16_t round;
-    EStateType state;
+struct TSCommand {  // timestamped command
+    uint32_t idx;   // timestamp field 1
+    uint32_t node_id;   // timestamp field2
     Command command;
-    bool operator== (RSCommand &other)
-    {
-        return round == other.round && state == other.state
-                && command == other.command;
-    }
-};  // name stands for: round state command
 
-struct RSCommandHash {
-    std::size_t operator()(const RSCommand& rsCmd) const {
+    bool operator< (TSCommand &other)
+    {
+        return idx > other.idx ||
+            (idx == other.idx && node_id > other.node_id);
+    }
+
+    bool operator== (TSCommand &other)
+    {
+        return idx == other.idx && node_id == other.node_id;
+    }
+};
+
+struct TSCommandHash{
+    std::size_t operator()(const TSCommand &tsCmd) const {
         std::size_t seed = 0;
-        seed ^= std::hash<uint16_t>()(rsCmd.round) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= std::hash<EStateType>()(rsCmd.state) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= CommandHash()(rsCmd.command) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= std::hash<uint32_t>()(tsCmd.idx) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= std::hash<uint32_t>()(tsCmd.node_id) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= CommandHash()(tsCmd.command) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
     }
 };
 
-struct RVCommand {
+struct RSTSCommand {
+    uint16_t round;
+    EStateType state;
+    TSCommand tsCommand;
+    bool operator== (RSTSCommand &other)
+    {
+        return round == other.round && state == other.state
+                && tsCommand == other.tsCommand;
+    }
+};  // name stands for: round state command
+
+struct RSTSCommandHash {
+    std::size_t operator()(const RSTSCommand& rsCmd) const {
+        std::size_t seed = 0;
+        seed ^= std::hash<uint16_t>()(rsCmd.round) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= std::hash<EStateType>()(rsCmd.state) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= TSCommandHash()(rsCmd.tsCommand) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
+    }
+};
+
+struct RVTSCommand {
     uint16_t round;
     EVoteType vote;
-    Command command;
+    TSCommand tsCommand;
 };  // name stands for: round vote command
 
 
-static_assert(sizeof(RSCommand) == 40);
+// static_assert(sizeof(RSCommand) == 40);
 
 // Base Struct TMessage
 // size 16
@@ -133,32 +160,19 @@ struct TCmdReq: public TMessage {
 };
 static_assert(sizeof(TCmdReq) == 48);
 
-
-struct Timestamp {
-    uint32_t idx;
-    uint32_t node_id;
-};
-
 // Equiv to :replicate 
 // size 56
 struct TReplicate : public TMessage {
     static constexpr EMessageType MessageType = EMessageType::REPLICATE;
-    Timestamp msg_id;
-    Command command;
-    bool operator< (TReplicate &other)
-    {
-        return msg_id.idx > other.msg_id.idx || 
-            (msg_id.idx == other.msg_id.idx && msg_id.node_id > other.msg_id.node_id);
-    }
+    TSCommand tsCommand;
 };
 
 // Equiv to :proposal
 // size 64
 struct TProposal : public TMessage {
     static constexpr EMessageType MessageType = EMessageType::PROPOSAL;
-    Timestamp msg_id;
     uint64_t log_idx;
-    Command command;
+    TSCommand tsCommand;
 };
 static_assert(sizeof(TProposal) == 64);
 
@@ -168,17 +182,19 @@ static_assert(sizeof(TProposal) == 64);
 struct TStateMsg : public TMessage {
     static constexpr EMessageType MessageType = EMessageType::STATE;
     uint64_t log_idx;
-    RSCommand rsComand;
+    // uint16_t round;
+    // EStateType state;
+    RSTSCommand rstsComand;
 
-    TStateMsg(uint64_t seq, uint16_t r, EStateType est, Command c)
+    TStateMsg(uint64_t seq, uint16_t r, EStateType est, TSCommand tsc)
     {
-        RSCommand rsc{
+        RSTSCommand rsc{
             .round = r,
             .state = est,
-            .command = c
+            .tsCommand = tsc
         };
         log_idx = seq;
-        rsComand = rsc;
+        rstsComand = rsc;
     };
 };
 
@@ -187,18 +203,17 @@ struct TStateMsg : public TMessage {
 struct TVote : public TMessage {
     static constexpr EMessageType MessageType = EMessageType::VOTE;
     uint64_t log_idx;
-    RVCommand rvCommand;
-
-    TVote(uint64_t seq, uint16_t r, EVoteType evt, Command c)
-    {
-        RVCommand rvc {
-            .round = r,
-            .vote = evt,
-            .command = c
-        };
-        log_idx = seq;
-        rvCommand = rvc;
-    }
+    RVTSCommand rvtsCommand;
+    // TVote(uint64_t seq, uint16_t r, EVoteType evt, Command c)
+    // {
+    //     RVCommand rvc {
+    //         .round = r,
+    //         .vote = evt,
+    //         .command = c
+    //     };
+    //     log_idx = seq;
+    //     rvCommand = rvc;
+    // }
 
 };
 
