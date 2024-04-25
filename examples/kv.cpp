@@ -10,7 +10,7 @@ struct TKvEntry {
     char Data[0];
 };
 
-struct TKvLogEntry: public TLogEntry, public TKvEntry
+struct TKvLogEntry: public TCmdReq, public TKvEntry
 {
 };
 
@@ -50,7 +50,7 @@ TMessageHolder<TMessage> TKv::Read(TMessageHolder<TCommandRequest> message, uint
     }
 }
 
-void TKv::Write(TMessageHolder<TLogEntry> message, uint64_t index) {
+void TKv::Write(TMessageHolder<TCmdReq> message, uint64_t index) {
     if (LastAppliedIndex < index) {
         auto entry = message.Cast<TKvLogEntry>();
         std::string_view k(entry->TKvEntry::Data, entry->KeySize);
@@ -64,9 +64,9 @@ void TKv::Write(TMessageHolder<TLogEntry> message, uint64_t index) {
     }
 }
 
-TMessageHolder<TLogEntry> TKv::Prepare(TMessageHolder<TCommandRequest> command, uint64_t term) {
+TMessageHolder<TCmdReq> TKv::Prepare(TMessageHolder<TCommandRequest> command, uint64_t term) {
     auto dataSize = command->Len - sizeof(TCommandRequest);
-    auto entry = NewHoldedMessage<TLogEntry>(sizeof(TLogEntry)+dataSize);
+    auto entry = NewHoldedMessage<TCmdReq>(sizeof(TCmdReq)+dataSize);
     memcpy(entry->Data, command->Data, dataSize);
     //entry->Term = term;
     return entry;

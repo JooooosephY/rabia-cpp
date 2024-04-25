@@ -40,7 +40,7 @@ TMessageHolder<TMessage> TDummyRsm::Read(TMessageHolder<TCommandRequest> message
     }
 }
 
-void TDummyRsm::Write(TMessageHolder<TLogEntry> message, uint64_t index)
+void TDummyRsm::Write(TMessageHolder<TCmdReq> message, uint64_t index)
 {
     if (LastAppliedIndex < index) {
         Log.emplace_back(std::move(message));
@@ -48,10 +48,11 @@ void TDummyRsm::Write(TMessageHolder<TLogEntry> message, uint64_t index)
     }
 }
 
-TMessageHolder<TLogEntry> TDummyRsm::Prepare(TMessageHolder<TCommandRequest> command, uint64_t term)
+// input client command, output log entry (for appending)
+TMessageHolder<TCmdReq> TDummyRsm::Prepare(TMessageHolder<TCommandRequest> command, uint64_t term)
 {
     auto dataSize = command->Len - sizeof(TCommandRequest);
-    auto entry = NewHoldedMessage<TLogEntry>(sizeof(TLogEntry)+dataSize);
+    auto entry = NewHoldedMessage<TCmdReq>(sizeof(TCmdReq)+dataSize);
     memcpy(entry->Data, command->Data, dataSize);
     entry->Term = term;
     return entry;
@@ -213,7 +214,7 @@ void TRaft::OnAppendEntries(ITimeSource::Time now, TMessageHolder<TAppendEntries
         auto& log = State->Log;
         for (uint32_t i = 0 ; i < message.PayloadSize; i++) {
             auto& data = message.Payload[i];
-            auto entry = data.Cast<TLogEntry>();
+            auto entry = data.Cast<TCmdReq>();
             index++;
             // replace or append log entries
             if (State->LogTerm(index) != entry->Term) {

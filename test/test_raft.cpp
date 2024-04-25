@@ -76,7 +76,7 @@ template<typename T=TMessage>
 std::vector<TMessageHolder<T>> MakeLog(const std::vector<uint64_t>& terms) {
     std::vector<TMessageHolder<T>> entries;
     for (auto term : terms) {
-        auto mes = NewHoldedMessage<TLogEntry>();
+        auto mes = NewHoldedMessage<TCmdReq>();
         mes->Term = term;
         entries.push_back(mes);
     }
@@ -91,7 +91,7 @@ void SetPayload(TMessageHolder<T>& dst, const std::vector<TMessageHolder<TMessag
     }
 }
 
-void assert_terms(const std::vector<TMessageHolder<TLogEntry>>& log, const std::vector<uint64_t>& terms)
+void assert_terms(const std::vector<TMessageHolder<TCmdReq>>& log, const std::vector<uint64_t>& terms)
 {
     assert_int_equal(log.size(), terms.size());
     for (size_t i = 0; i < log.size(); i++) {
@@ -124,15 +124,15 @@ void test_message_create(void** state) {
 }
 
 void test_message_cast(void** state) {
-    TMessageHolder<TMessage> mes = NewHoldedMessage<TLogEntry>(16);
-    auto casted = mes.Cast<TLogEntry>();
+    TMessageHolder<TMessage> mes = NewHoldedMessage<TCmdReq>(16);
+    auto casted = mes.Cast<TCmdReq>();
     assert_true(mes.RawData == casted.RawData);
     assert_true(mes->Len == casted->Len);
 
     auto casted2 = mes.Maybe<TRequestVoteRequest>();
     assert_false(casted2);
 
-    auto maybeCasted = mes.Maybe<TLogEntry>();
+    auto maybeCasted = mes.Maybe<TCmdReq>();
     assert_true(maybeCasted);
     auto casted3 = maybeCasted.Cast();
     assert_true(mes.RawData == casted3.RawData);
@@ -141,9 +141,9 @@ void test_message_cast(void** state) {
 
 void test_message_send_recv(void** state) {
     const char* text = "MESSAGE";
-    auto mes = NewHoldedMessage<TLogEntry>(
-        static_cast<uint32_t>(TLogEntry::MessageType),
-        sizeof(TLogEntry) + strlen(text) + 1
+    auto mes = NewHoldedMessage<TCmdReq>(
+        static_cast<uint32_t>(TCmdReq::MessageType),
+        sizeof(TCmdReq) + strlen(text) + 1
     );
     strcpy(mes.Mes->Data, text);
 
@@ -154,7 +154,7 @@ void test_message_send_recv(void** state) {
 
     TSocket client(TAddress{"127.0.0.1", 8888}, loop.Poller());
 
-    TVoidSuspendedTask h1 = [](TSocket& client, TMessageHolder<TLogEntry> mes) -> TVoidSuspendedTask
+    TVoidSuspendedTask h1 = [](TSocket& client, TMessageHolder<TCmdReq> mes) -> TVoidSuspendedTask
     {
         co_await client.Connect();
         auto r = co_await client.WriteSome(mes.RawData.get(), mes->Len);
@@ -177,7 +177,7 @@ void test_message_send_recv(void** state) {
         loop.Step();
     }
 
-    auto maybeCasted = received.Maybe<TLogEntry>();
+    auto maybeCasted = received.Maybe<TCmdReq>();
     assert_true(maybeCasted);
     auto casted = maybeCasted.Cast();
     assert_string_equal(mes->Data, casted->Data);
@@ -281,7 +281,7 @@ void test_follower_append_entries_7a(void**) {
     raft->SetState(TState{
         .CurrentTerm = 1,
         .VotedFor = 2,
-        .Log = MakeLog<TLogEntry>({1,1,1,4,4,5,5,6,6})
+        .Log = MakeLog<TCmdReq>({1,1,1,4,4,5,5,6,6})
     });
     auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
@@ -315,7 +315,7 @@ void test_follower_append_entries_7b(void**) {
     raft->SetState(TState{
         .CurrentTerm = 1,
         .VotedFor = 2,
-        .Log = MakeLog<TLogEntry>({1,1,1,4})
+        .Log = MakeLog<TCmdReq>({1,1,1,4})
     });
     auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
@@ -349,7 +349,7 @@ void test_follower_append_entries_7c(void**) {
     raft->SetState(TState{
         .CurrentTerm = 1,
         .VotedFor = 2,
-        .Log = MakeLog<TLogEntry>({1,1,1,4,4,5,5,6,6,6,6})
+        .Log = MakeLog<TCmdReq>({1,1,1,4,4,5,5,6,6,6,6})
     });
     auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
@@ -383,7 +383,7 @@ void test_follower_append_entries_7f(void**) {
     raft->SetState(TState{
         .CurrentTerm = 1,
         .VotedFor = 2,
-        .Log = MakeLog<TLogEntry>({1,1,1,2,2,2,3,3,3,3,3})
+        .Log = MakeLog<TCmdReq>({1,1,1,2,2,2,3,3,3,3,3})
     });
     auto mes = NewHoldedMessage(TMessage {
         .Src = 2,
@@ -613,7 +613,7 @@ void test_election_5_nodes(void**) {
 void test_commit_advance(void**) {
     auto state = TState {
         .CurrentTerm = 1,
-        .Log = MakeLog<TLogEntry>({1})
+        .Log = MakeLog<TCmdReq>({1})
     };
 
     auto s = TVolatileState {
@@ -628,7 +628,7 @@ void test_commit_advance(void**) {
     s = TVolatileState {
         .MatchIndex = {{1, 1}, {2, 2}}
     };
-    auto add = MakeLog<TLogEntry>({1});
+    auto add = MakeLog<TCmdReq>({1});
     state.Log.insert(state.Log.end(), add.begin(), add.end());
     s1 = TVolatileState(s).CommitAdvance(3, state);
     assert_int_equal(s1.CommitIndex, 2);
@@ -639,7 +639,7 @@ void test_commit_advance(void**) {
 void test_commit_advance_wrong_term(void**) {
     auto state = TState {
         .CurrentTerm = 2,
-        .Log = MakeLog<TLogEntry>({1,1})
+        .Log = MakeLog<TCmdReq>({1,1})
     };
     auto s = TVolatileState {
         .MatchIndex = {{1, 1}, {2, 2}}

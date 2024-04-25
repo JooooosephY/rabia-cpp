@@ -17,7 +17,7 @@ enum class Operation : uint32_t {
 
 enum class EMessageType : uint32_t {
     PROTOCAL = 0,
-    LOG_ENTRY = 1,
+    CMD_REQ = 1,
     REPLICATE = 2,
     PROPOSAL = 3,
     STATE = 4,
@@ -127,11 +127,11 @@ struct TMessage {
 
 // Client message
 // size 48
-struct TLogEntry: public TMessage {
-    static constexpr EMessageType MessageType = EMessageType::LOG_ENTRY;
+struct TCmdReq: public TMessage {
+    static constexpr EMessageType MessageType = EMessageType::CMD_REQ;
     Command command;
 };
-static_assert(sizeof(TLogEntry) == 48);
+static_assert(sizeof(TCmdReq) == 48);
 
 
 struct Timestamp {

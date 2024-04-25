@@ -107,7 +107,7 @@ private:
     std::coroutine_handle<> Drainer;
     std::coroutine_handle<> Connector;
 
-    std::vector<TMessageHolder<TMessage>> Messages;
+    std::vector<TMessage> Messages;
 };
 
 template<typename TSocket>

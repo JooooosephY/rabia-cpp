@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include "raft.h"
+#include "rabia.h"
 #include "server.h"
 #include "messages.h"
 
@@ -40,7 +40,7 @@ NNet::TValueTask<TMessage> TMessageReader<TSocket>::Read() {
         }
         case 1:
         {
-            auto structReader = NNet::TStructReader<TLogEntry, TSocket>(Socket);
+            auto structReader = NNet::TStructReader<TCmdReq, TSocket>(Socket);
             auto msg = co_await structReader.Read();
             co_return msg;
         }
