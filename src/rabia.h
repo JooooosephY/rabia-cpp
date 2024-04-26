@@ -24,9 +24,9 @@ struct IRsm {
 };
 
 struct TDummyRsm : public IRsm {
-    TMessage Read (TCmdReq message, uint64_t index) override;
-    void Write(Command, uint64_t index) override;
-    Command Prepare(TCmdReq message) override;
+    //TMessage Read (TCmdReq message, uint64_t index) override;
+    //void Write(Command, uint64_t index) override;
+    //Command Prepare(TCmdReq message) override;
 
     private:
     uint64_t lastApplied;
@@ -45,8 +45,8 @@ enum class EStage : uint16_t {
 class TRabia {
 public:
     TRabia(std::shared_ptr<IRsm> rsm, int node, const TNodeDict &ndoes);
-    void Process(ITimeSource::Time now, TMessage msg, const std::shared_ptr<INode>& replyTo = {});
-    void Run();
+    //void Process(ITimeSource::Time now, TMessage msg, const std::shared_ptr<INode>& replyTo = {});
+    void Run(TMessage &msg, const std::shared_ptr<INode> &replyTo);
 
     // utilities
     const uint32_t GetId() const {
@@ -78,19 +78,21 @@ private:
     uint64_t cmdSeq = 1;
     uint64_t slotIdx = 1;    // equiv to seq in lab4, next slot index
 
-    std::unordered_map<uint64_t, uint64_t> Storage;
-    std::unordered_map<int, uint32_t> pendingRequests; // key type undecided
-    std::priority_queue<TSCommand> proposeQueue;
-    std::unordered_map<uint64_t, EStage> mvcStage;
-    std::unordered_map<uint64_t, TSCommand> weakMvcMyProposal;
-    std::unordered_map<uint64_t, std::deque<TSCommand>> weakMvcProposals;
-    std::unordered_map<uint64_t, TSCommand> weakMvcChosenCommand;
-    std::unordered_map<uint64_t, uint16_t> weakMvcRound;  // logidx -> round
-    std::unordered_map<uint64_t, std::deque<TStateMsg>> queuedStateMessages;
-    std::unordered_map<uint64_t, std::deque<RSTSCommand>> weakMvcStateMessages;
-    std::unordered_map<uint64_t, TSCommand> weaMvcStateCommand;
-    std::unordered_map<uint64_t, TSCommand> weakMvcMyVote;
-    std::unordered_map<uint64_t, std::deque<TVote>> queuedVoteMessages;
-    std::unordered_map<uint64_t, std::deque<RVTSCommand>> weakMvcVotes;
-    std::unordered_map<uint64_t, std::deque<TSCommand>> weakMvcVoteCommands;
+    std::unordered_map<uint64_t, uint64_t> Storage = {};
+    std::unordered_map<int, uint32_t> pendingRequests = {}; // key type undecided
+    std::priority_queue<TSCommand> proposeQueue = {};
+    std::unordered_map<uint64_t, EStage> mvcStage = {};
+    std::unordered_map<uint64_t, TSCommand> weakMvcMyProposal = {};
+    std::unordered_map<uint64_t, std::deque<TSCommand>> weakMvcProposals = {};
+    std::unordered_map<uint64_t, TSCommand> weakMvcChosenCommand = {};
+    std::unordered_map<uint64_t, uint16_t> weakMvcRound = {};  // logidx -> round
+    std::unordered_map<uint64_t, std::deque<TStateMsg>> queuedStateMessages = {};
+    std::unordered_map<uint64_t, std::deque<RSTSCommand>> weakMvcStateMessages = {};
+    std::unordered_map<uint64_t, TSCommand> weaMvcStateCommand = {};
+    std::unordered_map<uint64_t, TSCommand> weakMvcMyVote = {};
+    std::unordered_map<uint64_t, std::deque<TVote>> queuedVoteMessages = {};
+    std::unordered_map<uint64_t, std::deque<RVTSCommand>> weakMvcVotes = {};
+    std::unordered_map<uint64_t, std::deque<TSCommand>> weakMvcVoteCommands = {};
+
+    void HandleClientCommand(uint64_t client, Command cmd);
 };

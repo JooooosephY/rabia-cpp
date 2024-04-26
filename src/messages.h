@@ -186,16 +186,16 @@ struct TStateMsg : public TMessage {
     // EStateType state;
     RSTSCommand rstsComand;
 
-    TStateMsg(uint64_t seq, uint16_t r, EStateType est, TSCommand tsc)
-    {
-        RSTSCommand rsc{
-            .round = r,
-            .state = est,
-            .tsCommand = tsc
-        };
-        log_idx = seq;
-        rstsComand = rsc;
-    };
+    // TStateMsg(uint64_t seq, uint16_t r, EStateType est, TSCommand tsc)
+    // {
+    //     RSTSCommand rsc{
+    //         .round = r,
+    //         .state = est,
+    //         .tsCommand = tsc
+    //     };
+    //     log_idx = seq;
+    //     rstsComand = rsc;
+    // };
 };
 
 // Equiv to :vote
