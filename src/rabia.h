@@ -95,4 +95,5 @@ private:
     std::unordered_map<uint64_t, std::deque<TSCommand>> weakMvcVoteCommands = {};
 
     void HandleClientCommand(uint64_t client, Command cmd);
+    void Bcast(TMessage msg);
 };

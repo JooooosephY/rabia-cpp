@@ -26,9 +26,31 @@ TRabia::TRabia(std::shared_ptr<IRsm> rsm, int node, const TNodeDict &nodes)
     QuorumSize = ((Npeers + 2 + Npeers % 2) / 2);
 }
 
-void HandleClientCommand(uint64_t client, Command command)
+void TRabia::Bcast(TMessage msg) 
 {
+    for (auto it = Nodes.begin(); it != Nodes.end(); it++)
+    {
+        uint32_t dst = it->first;
+        //auto Node = it->second;
+        msg.Dst = dst;
+        it->second->Send(msg);
+    }
     
+}
+
+void TRabia::HandleClientCommand(uint64_t client, Command cmd)
+{
+    TSCommand tscmd{
+        .idx = cmdSeq,
+        .node_id = Id,
+        .command = cmd
+    };
+    TReplicate repMsg{
+        .tsCommand = tscmd,
+    };
+    repMsg.Type = (uint32_t)repMsg.MessageType;
+    Bcast(repMsg);
+    printf("%u received client command\n", Id);
 }
 
 void TRabia::Run(TMessage &msg, const std::shared_ptr<INode> &replyTo)
