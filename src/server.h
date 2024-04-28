@@ -20,7 +20,7 @@ public:
         : Socket(socket)
     { }
 
-    NNet::TValueTask<TMessageHolder<TMessage>> Read();
+    NNet::TValueTask<TMessage> Read();
 
 private:
     TSocket& Socket;
@@ -33,7 +33,7 @@ public:
         : Socket(socket)
     { }
 
-    NNet::TValueTask<void> Write(TMessageHolder<TMessage> message);
+    NNet::TValueTask<void> Write(TMessage message);
 
 private:
     TSocket& Socket;
@@ -85,7 +85,7 @@ public:
         , TimeSource(ts)
     { }
 
-    void Send(TMessageHolder<TMessage> message) override;
+    void Send(TMessage message) override;
     void Drain() override;
     TSocket& Sock() {
         return Socket;
@@ -107,13 +107,13 @@ private:
     std::coroutine_handle<> Drainer;
     std::coroutine_handle<> Connector;
 
-    std::vector<TMessageHolder<TMessage>> Messages;
+    std::vector<TMessage> Messages;
 };
 
 template<typename TSocket>
-class TRaftServer {
+class TRabiaServer {
 public:
-    TRaftServer(
+    TRabiaServer(
         typename TSocket::TPoller& poller,
         TSocket socket,
         const std::shared_ptr<TRaft>& raft,

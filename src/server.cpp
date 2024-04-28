@@ -4,50 +4,89 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include "raft.h"
+#include "rabia.h"
 #include "server.h"
 #include "messages.h"
 
 template<typename TSocket>
-NNet::TValueTask<void> TMessageWriter<TSocket>::Write(TMessageHolder<TMessage> message) {
-    co_await NNet::TByteWriter(Socket).Write(message.Mes, message->Len);
+NNet::TValueTask<void> TMessageWriter<TSocket>::Write(TMessage message) {
+    co_await NNet::TByteWriter(Socket).Write(message, message.Len);
 
-    auto payload = std::move(message.Payload);
-    for (uint32_t i = 0; i < message.PayloadSize; ++i) {
-        co_await Write(std::move(payload[i]));
-    }
-
+    // auto payload = std::move(message.Payload);
+    // for (uint32_t i = 0; i < message.PayloadSize; ++i) {
+    //     co_await Write(std::move(payload[i]));
+    // }
     co_return;
 }
 
 template<typename TSocket>
-NNet::TValueTask<TMessageHolder<TMessage>> TMessageReader<TSocket>::Read() {
+NNet::TValueTask<TMessage> TMessageReader<TSocket>::Read() {
     decltype(TMessage::Type) type;
     decltype(TMessage::Len) len;
     auto s = co_await Socket.ReadSome(&type, sizeof(type));
     if (s != sizeof(type)) {
         throw std::runtime_error("Connection closed");
     }
-    s = co_await Socket.ReadSome(&len, sizeof(len));
-    if (s != sizeof(len)) {
-        throw std::runtime_error("Connection closed");
-    }
-    auto mes = NewHoldedMessage<TMessage>(type, len);
-    co_await NNet::TByteReader(Socket).Read(mes->Value, len - sizeof(TMessage));
-    auto maybeAppendEntries = mes.Maybe<TAppendEntriesRequest>();
-    if (maybeAppendEntries) {
-        auto appendEntries = maybeAppendEntries.Cast();
-        auto nentries = appendEntries->Nentries;
-        mes.InitPayload(nentries);
-        for (uint32_t i = 0; i < nentries; i++) {
-            mes.Payload[i] = co_await Read();
+    // s = co_await Socket.ReadSome(&len, sizeof(len));
+    // if (s != sizeof(len)) {
+    //     throw std::runtime_error("Connection closed");
+    // }
+    switch (type){
+        case 0:
+        {
+            auto structReader = NNet::TStructReader<TMessage, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return  msg;
         }
+        case 1:
+        {
+            auto structReader = NNet::TStructReader<TCmdReq, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 2:
+        {
+            auto structReader = NNet::TStructReader<TReplicate, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 3:
+        {
+            auto structReader = NNet::TStructReader<TProposal, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 4:
+        {
+            auto structReader = NNet::TStructReader<TStateMsg, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 5:
+        {
+            auto structReader = NNet::TStructReader<TVote, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 6:
+        {
+            auto structReader = NNet::TStructReader<TDecided, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        case 7:
+        {
+            auto structReader = NNet::TStructReader<TResponse, TSocket>(Socket);
+            auto msg = co_await structReader.Read();
+            co_return msg;
+        }
+        default:
+            break;
     }
-    co_return mes;
 }
 
 template<typename TSocket>
-void TNode<TSocket>::Send(TMessageHolder<TMessage> message) {
+void TNode<TSocket>::Send(TMessage message) {
     Messages.emplace_back(std::move(message));
 }
 
@@ -113,7 +152,7 @@ NNet::TVoidSuspendedTask TNode<TSocket>::DoConnect() {
 }
 
 template<typename TSocket>
-NNet::TVoidTask TRaftServer<TSocket>::InboundConnection(TSocket socket) {
+NNet::TVoidTask TRabiaServer<TSocket>::InboundConnection(TSocket socket) {
     std::shared_ptr<TNode<TSocket>> client;
     try {
         client = std::make_shared<TNode<TSocket>>(
@@ -134,20 +173,20 @@ NNet::TVoidTask TRaftServer<TSocket>::InboundConnection(TSocket socket) {
 }
 
 template<typename TSocket>
-void TRaftServer<TSocket>::Serve() {
+void TRabiaServer<TSocket>::Serve() {
     Idle();
     InboundServe();
 }
 
 template<typename TSocket>
-void TRaftServer<TSocket>::DrainNodes() {
+void TRabiaServer<TSocket>::DrainNodes() {
     for (const auto& node : Nodes) {
         node->Drain();
     }
 }
 
 template<typename TSocket>
-NNet::TVoidTask TRaftServer<TSocket>::InboundServe() {
+NNet::TVoidTask TRabiaServer<TSocket>::InboundServe() {
     while (true) {
         auto client = co_await Socket.Accept();
         std::cout << "Accepted\n";
@@ -157,7 +196,7 @@ NNet::TVoidTask TRaftServer<TSocket>::InboundServe() {
 }
 
 template<typename TSocket>
-void TRaftServer<TSocket>::DebugPrint() {
+void TRabiaServer<TSocket>::DebugPrint() {
     auto* state = Raft->GetState();
     auto* volatileState = Raft->GetVolatileState();
     if (Raft->CurrentStateName() == EState::LEADER) {
@@ -194,7 +233,7 @@ void TRaftServer<TSocket>::DebugPrint() {
 }
 
 template<typename TSocket>
-NNet::TVoidTask TRaftServer<TSocket>::Idle() {
+NNet::TVoidTask TRabiaServer<TSocket>::Idle() {
     auto t0 = TimeSource->Now();
     auto dt = std::chrono::milliseconds(2000);
     auto sleep = std::chrono::milliseconds(100);
@@ -211,9 +250,9 @@ NNet::TVoidTask TRaftServer<TSocket>::Idle() {
     co_return;
 }
 
-template class TRaftServer<NNet::TSocket>;
-template class TRaftServer<NNet::TSslSocket<NNet::TSocket>>;
+template class TRabiaServer<NNet::TSocket>;
+template class TRabiaServer<NNet::TSslSocket<NNet::TSocket>>;
 #ifdef __linux__
-template class TRaftServer<NNet::TUringSocket>;
-template class TRaftServer<NNet::TSslSocket<NNet::TUringSocket>>;
+template class TRabiaServer<NNet::TUringSocket>;
+template class TRabiaServer<NNet::TSslSocket<NNet::TUringSocket>>;
 #endif

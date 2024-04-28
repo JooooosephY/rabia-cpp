@@ -21,18 +21,18 @@ struct INode {
 struct IRsm {
     virtual ~IRsm() = default;
     virtual TMessageHolder<TMessage> Read(TMessageHolder<TCommandRequest> message, uint64_t index) = 0;
-    virtual void Write(TMessageHolder<TLogEntry> message, uint64_t index) = 0;
-    virtual TMessageHolder<TLogEntry> Prepare(TMessageHolder<TCommandRequest> message, uint64_t term) = 0;
+    virtual void Write(TMessageHolder<TCmdReq> message, uint64_t index) = 0;
+    virtual TMessageHolder<TCmdReq> Prepare(TMessageHolder<TCommandRequest> message, uint64_t term) = 0;
 };
 
 struct TDummyRsm: public IRsm {
     TMessageHolder<TMessage> Read(TMessageHolder<TCommandRequest> message, uint64_t index) override;
-    void Write(TMessageHolder<TLogEntry> message, uint64_t index) override;
-    TMessageHolder<TLogEntry> Prepare(TMessageHolder<TCommandRequest> message, uint64_t term) override;
+    void Write(TMessageHolder<TCmdReq> message, uint64_t index) override;
+    TMessageHolder<TCmdReq> Prepare(TMessageHolder<TCommandRequest> message, uint64_t term) override;
 
 private:
     uint64_t LastAppliedIndex;
-    std::vector<TMessageHolder<TLogEntry>> Log;
+    std::vector<TMessageHolder<TCmdReq>> Log;
 };
 
 using TNodeDict = std::unordered_map<uint32_t, std::shared_ptr<INode>>;
@@ -40,7 +40,7 @@ using TNodeDict = std::unordered_map<uint32_t, std::shared_ptr<INode>>;
 struct TState {
     uint64_t CurrentTerm = 1;
     uint32_t VotedFor = 0;
-    std::vector<TMessageHolder<TLogEntry>> Log;
+    std::vector<TMessageHolder<TCmdReq>> Log;
 
     uint64_t LogTerm(int64_t index = -1) const {
         if (index < 0) {
