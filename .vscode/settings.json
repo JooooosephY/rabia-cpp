@@ -76,5 +76,6 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "numbers": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
 }

@@ -77,6 +77,7 @@ private:
 
     uint64_t cmdSeq = 1;
     uint64_t slotIdx = 1;    // equiv to seq in lab4, next slot index
+    uint64_t lastExecutedIdx = 1;
 
     std::unordered_map<uint64_t, uint64_t> Storage = {};
     std::unordered_map<int, uint32_t> pendingRequests = {}; // key type undecided
@@ -108,5 +109,12 @@ private:
     void update_state_cmd(uint64_t idx, const TStateMsg& msg);
     void transition_to_phase2vote(uint64_t idx, uint64_t round, EVoteType vote, const std::optional<TSCommand>& command);
     void replay_enqueued_vote_msgs(uint64_t idx);
-    void process_vote_message(uint64_t idx, uint32_t node, TVote vote)
+    void process_vote_message(uint64_t idx, uint32_t node, TVote vote);
+    void count_votes(uint64_t idx, TVote vote);
+    void update_vote_command(uint64_t idx, const TVote vote);
+    void end_benor_round(uint64_t idx, uint16_t round);
+    void decided(uint64_t idx, TSCommand committed);
+    void execute_decided_commands();
+    void send_response_to_client(uint64_t cmdId, TResponse response);
+    std::tuple<std::optional<uint32_t>, std::optional<TResponse>> execute_cmd(const RSTSCommand& cmd);
 };

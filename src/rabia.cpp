@@ -320,6 +320,173 @@ void TRabia::process_vote_message(uint64_t idx, uint32_t node, TVote vote) {
     }
 }
 
+//有问题
+void TRabia::count_votes(uint64_t idx, const TVote vote) {
+    update_vote_command(idx, vode);
+    auto& votes_map = weakMvcVotes;
+    auto& q = QuorumSize;
+
+    // Update the count of the received vote in the votes_map
+    auto& votes = votes_map[idx];
+    votes[vote.rvtsCommand.vote]++;
+
+    // Calculate the total number of votes received
+    size_t n_votes = std::accumulate(votes.begin(), votes.end(), 0,
+        [](size_t total, const auto& pair) { return total + pair.second; });
+
+    // Check if the number of received votes is sufficient to proceed with the decision process
+    if (n_votes >= q) {
+        // We have enough votes to run the decision process
+        end_benor_round(idx, vote.rvtsCommand.round);
+    }
+}
+
+//有问题
+void TRabia::update_vote_command(uint64_t idx, const TVote vote) {
+    auto& cmds = weakMvcVoteCommands;
+
+    // Check if the received vote is a command vote
+    if (vote.rvtsCommand.vote == EVoteType::CMD_VOTE) {
+        auto& cmd = cmds[idx];
+
+        // Ensure that only one command is in play for each node
+        check_assumption(cmd.empty() || cmd == vote.rvtsCommand.tsCommand,
+                         std::to_string(idx) + " Two commands are in play.");
+
+        // Update the command associated with the node in the cmds map
+        cmds[idx] = vote.rvtsCommand.tsCommand;
+    }
+}
+
+//有问题
+void TRabia::end_benor_round(uint64_t idx, uint16_t round) {
+    auto& my_votes = weakMvcMyVote;
+    auto& votes_map = weakMvcVotes;
+    auto& q = QuorumSize;
+    auto& vcmds = weakMvcVoteCommands;
+    auto& scmds = weaMvcStateCommand;
+
+    auto& votes = votes_map[idx];
+
+    check_assumption(votes.size() == 1 || votes.size() == 2,
+                     "More than two types of votes?");
+
+    if (votes[EVoteType::CMD_VOTE] >= QuorumSize) {
+        std::cout << "Decided for " << vcmds[idx] << std::endl;
+        decided(idx, vcmds[idx]);
+    } else if (votes[EVoteType::CMD_VOTE] >= 1) {
+        std::cout << "Need to go back to p2s with command" << std::endl;
+        auto cmd = vcmds[idx];
+        transition_to_phase2state(idx, round + 1, cmd);
+    } else if (my_votes[idx] == EVoteType::CMD_VOTE) {
+        std::cout << "Need to go back to p2s with command" << std::endl;
+        auto cmd = vcmds[idx];
+        check_assumption(!cmd.empty(), "Must know what we voted for");
+        transition_to_phase2state(idx, round + 1, cmd);
+    } else {
+        // We only got a lot of ?-votes
+        auto coin = common_coin();
+        auto cmd = scmds[idx];
+
+        check_assumption(cmd!=NULL, "Got only ?-votes without a command");
+
+        if (coin == 0) {
+            transition_to_phase2state(idx, round + 1, cmd);
+        } else {
+            transition_to_phase2state(idx, round + 1, EStateType::BOT);
+        }
+    }
+}
+
+//有问题 cmdlog
+void TRabia::decided(uint64_t idx, TSCommand committed) {
+    auto& proposals = weakMvcMyProposal;
+    auto& pq = proposeQueue;
+    auto& stage = mvcStage;
+    auto& log = cmdLog;
+
+    // Check if the node has already decided on this command
+    if (stage[idx] != EStage::DECIDED) {
+        stage[idx] = EStage::DECIDED;
+        log[idx] = committed;
+
+        // Execute commands for decided slots
+        execute_decided_commands();
+
+        auto desired = proposals[idx];
+
+        if (desired != NULL && committed != desired) {
+            pq.push(desired);
+            propose_next_command();
+        }
+    }
+}
+
+//有问题 cmdlog
+void TRabia::execute_decided_commands() {
+    auto& log = cmdLog;
+    auto& stage = mvcStage;
+    auto& requests = pendingRequests;
+
+    // Iterate through the log and execute decided commands
+    for (const auto& [idx, cmd] : log) {
+        // Execute the command if it is decided
+        if (stage[idx] == EStage::DECIDED) {
+            // If the command is executed before, ignore it
+            if (idx <= lastExecutedIdx) {
+                continue;
+            }
+
+            // Execute the command
+            auto [executedState, cmdId, response] = execute_cmd(cmd);
+
+            // Update the last executed index
+            lastExecutedIdx++;
+
+            // Send response to the client if command execution returned a command ID
+            if (cmdId.has_value()) {
+                send_response_to_client(cmdId, response);
+            }
+        }
+    }
+}
+
+void TRabia::send_response_to_client(uint64_t cmdId, TResponse response) {
+    auto it = pendingRequests.find(cmdId);
+    if (it != pendingRequests.end()) {
+        // Client associated with this command ID found
+        auto client = it->second;
+        response.Dst = client;
+        Nodes[Id]->Send(response);
+    }
+}
+
+//有问题
+std::tuple<std::optional<uint32_t>, std::optional<TResponse>> TRabia::execute_cmd(const RSTSCommand& cmd) {
+    if (cmd.state == EStateType::BOT) {
+        return {std::nullopt, std::nullopt};
+    } else if (cmd.Timestamp) {
+        const auto& command = cmd.tsCommand;
+        const auto& clientSeq = command.command.client_seq;
+        const auto& operation = command.command.operation;
+        const auto& key = command.command.operation;
+        const auto& value = command.command.value;
+
+
+        switch (operation) {
+            case Operation::DEL:
+                Storage.erase(key);
+                return {command.idx, TResponse(clientSeq) };
+            case Operation::GET:
+                return {command.idx, TResponse(clientSeq, Storage[key]) };
+            case Operation::SET:
+                Storage[key] = value;
+                return {command.idx, TResponse(clientSeq) };
+        }
+    }
+    // Invalid command
+    return {std::nullopt, std::nullopt };
+}
 
 
 void TRabia::HandleClientCommand(uint64_t client, Command cmd)
