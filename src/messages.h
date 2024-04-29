@@ -176,7 +176,7 @@ struct TProposal : public TMessage {
 };
 static_assert(sizeof(TProposal) == 64);
 
-
+//可能有问题
 // Equiv to :state
 // size 64
 struct TStateMsg : public TMessage {

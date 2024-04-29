@@ -96,4 +96,17 @@ private:
 
     void HandleClientCommand(uint64_t client, Command cmd);
     void Bcast(TMessage msg);
+    void propose_next_command();
+    void process_proposal(uint64_t idx, uint32_t node, TSCommand cmd);
+    void process_valid_proposal(uint64_t idx, TSCommand cmd);
+    void transition_to_phase2state(uint64_t idx, uint16_t round, const TSCommand& smsg);
+    void update_round(uint64_t idx, uint16_t round);
+    void send_state_message(uint64_t idx);
+    void replay_enqueued_state_messages(uint64_t idx);
+    void process_state_message(uint64_t idx, int node, const TStateMsg& smsg);
+    void count_state_message(uint64_t idx, TStateMsg& msg);
+    void update_state_cmd(uint64_t idx, const TStateMsg& msg);
+    void transition_to_phase2vote(uint64_t idx, uint64_t round, EVoteType vote, const std::optional<TSCommand>& command);
+    void replay_enqueued_vote_msgs(uint64_t idx);
+    void process_vote_message(uint64_t idx, uint32_t node, TVote vote)
 };
